@@ -16,10 +16,12 @@ class ExpenseItem extends StatelessWidget {
           children: [
             Row(
               children: [
-                Text(expense.title, style: TextStyle(fontSize: 16)),
+                Text(
+                  expense.title,
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
                 Spacer(),
                 Icon(categoryIcon[expense.category]),
-                //Text(expense.category.name),
               ],
             ),
             SizedBox(height: 8),
