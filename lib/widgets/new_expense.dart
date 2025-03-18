@@ -77,101 +77,120 @@ class _NewExpenseState extends State<NewExpense> {
 
   @override
   Widget build(context) {
-    return Padding(
-      padding: EdgeInsets.all(16),
-      child: Column(
-        children: [
-          Text(
-            'Add a new expense',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 24),
-          TextField(
-            onTapOutside: (PointerDownEvent event) {
-              FocusManager.instance.primaryFocus?.unfocus();
-            },
-            controller: nameController,
-            maxLength: 25,
-            decoration: InputDecoration(label: Text('Expense name')),
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
+    final keyboardSpace = MediaQuery.of(context).viewInsets.bottom;
+
+    return LayoutBuilder(
+      builder: (context, constraint) {
+        final horizontalEdge = constraint.maxWidth >= 600 ? 32.0 : 16.0;
+
+        return SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(
+              horizontalEdge,
+              16,
+              horizontalEdge,
+              keyboardSpace + 32,
+            ),
+            child: Column(
+              children: [
+                Text(
+                  'Add a new expense',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 24),
+                TextField(
                   onTapOutside: (PointerDownEvent event) {
                     FocusManager.instance.primaryFocus?.unfocus();
                   },
-                  controller: amountController,
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  decoration: InputDecoration(
-                    prefixText: '\$',
-                    label: Text('Expense amount'),
-                  ),
+                  controller: nameController,
+                  maxLength: 25,
+                  decoration: InputDecoration(label: Text('Expense name')),
                 ),
-              ),
-              SizedBox(width: 16),
-              Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                Row(
                   children: [
-                    TextButton.icon(
-                      onPressed: presentDatePicker,
-                      label: Text(
-                        selectedDate == null
-                            ? 'Select a date'
-                            : formatter.format(selectedDate ?? DateTime.now()),
+                    Expanded(
+                      child: TextField(
+                        onTapOutside: (PointerDownEvent event) {
+                          FocusManager.instance.primaryFocus?.unfocus();
+                        },
+                        controller: amountController,
+                        keyboardType: TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        decoration: InputDecoration(
+                          prefixText: '\$',
+                          label: Text('Expense amount'),
+                        ),
                       ),
-                      icon: Icon(Icons.calendar_month),
+                    ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          TextButton.icon(
+                            onPressed: presentDatePicker,
+                            label: Text(
+                              selectedDate == null
+                                  ? 'Select a date'
+                                  : formatter.format(
+                                    selectedDate ?? DateTime.now(),
+                                  ),
+                            ),
+                            icon: Icon(Icons.calendar_month),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
-              ),
-            ],
+                SizedBox(height: 24),
+                Row(
+                  children: [
+                    Text('Select a category:'),
+                    SizedBox(width: 16),
+                    DropdownButton(
+                      value: selectedCategory,
+                      items:
+                          Category.values
+                              .map(
+                                (category) => DropdownMenuItem(
+                                  value: category,
+                                  child: Text(category.name.toUpperCase()),
+                                ),
+                              )
+                              .toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedCategory = value ?? Category.entertainment;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+                SizedBox(height: 32),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text('Cancel'),
+                    ),
+                    SizedBox(width: 16),
+                    ElevatedButton(
+                      onPressed: saveExpenseData,
+                      child: Text('Save expense'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-          SizedBox(height: 24),
-          Row(
-            children: [
-              Text('Select a category:'),
-              SizedBox(width: 16),
-              DropdownButton(
-                value: selectedCategory,
-                items:
-                    Category.values
-                        .map(
-                          (category) => DropdownMenuItem(
-                            value: category,
-                            child: Text(category.name.toUpperCase()),
-                          ),
-                        )
-                        .toList(),
-                onChanged: (value) {
-                  setState(() {
-                    selectedCategory = value ?? Category.entertainment;
-                  });
-                },
-              ),
-            ],
-          ),
-          SizedBox(height: 32),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text('Cancel'),
-              ),
-              SizedBox(width: 16),
-              ElevatedButton(
-                onPressed: saveExpenseData,
-                child: Text('Save expense'),
-              ),
-            ],
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
