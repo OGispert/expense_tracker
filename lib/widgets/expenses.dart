@@ -27,7 +27,7 @@ class _ExpensesState extends State<Expenses> {
 
   void addExpense(Expense expense) {
     setState(() {
-      recordedExpenses.add(expense);
+      recordedExpenses.insert(0, expense);
     });
   }
 
